@@ -10,10 +10,20 @@ import java.util.function.Consumer;
 public class Server {
 
     public static final int PORT = 11111;
+    private final Unmarshaller unmarshaller;
     private ServerSocket serverSocket;
 
     private Consumer<TextMessage> onMessageAccepted = m -> {
     };
+
+    public Server() {
+        try {
+            JAXBContext context = JAXBContext.newInstance(TextMessage.class);
+            unmarshaller = context.createUnmarshaller();
+        } catch (JAXBException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void start() {
         try {
@@ -43,8 +53,6 @@ public class Server {
         Socket incoming = serverSocket.accept();
 
         try (ObjectInputStream ois = new ObjectInputStream(incoming.getInputStream())) {
-            JAXBContext context = JAXBContext.newInstance(TextMessage.class);
-            Unmarshaller unmarshaller = context.createUnmarshaller();
             return (TextMessage) unmarshaller.unmarshal(ois);
         }
     }
