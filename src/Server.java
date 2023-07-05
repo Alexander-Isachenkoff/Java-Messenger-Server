@@ -1,3 +1,6 @@
+import entities.TextMessage;
+import entities.User;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -5,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public class Server {
@@ -13,12 +17,12 @@ public class Server {
     private final Unmarshaller unmarshaller;
     private ServerSocket serverSocket;
 
-    private Consumer<TextMessage> onMessageAccepted = m -> {
-    };
+    private final Map<Class, Consumer> map;
 
-    public Server() {
+    public Server(Map<Class, Consumer> classMap) {
+        this.map = classMap;
         try {
-            JAXBContext context = JAXBContext.newInstance(TextMessage.class);
+            JAXBContext context = JAXBContext.newInstance(TextMessage.class, User.class);
             unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
@@ -34,27 +38,29 @@ public class Server {
         System.out.println("Готов!\n");
 
         while (true) {
-            TextMessage message;
+            Object object;
             try {
-                message = getMessage();
+                object = getObject();
             } catch (IOException | JAXBException e) {
                 e.printStackTrace();
                 continue;
             }
-            onMessageAccepted.accept(message);
+            Consumer consumer = map.get(object.getClass());
+            if (consumer != null) {
+                consumer.accept(object);
+            }
         }
     }
 
-    public void setOnMessageAccepted(Consumer<TextMessage> onMessageAccepted) {
-        this.onMessageAccepted = onMessageAccepted;
-    }
-
-    private TextMessage getMessage() throws IOException, JAXBException {
+    private Object getObject() throws IOException, JAXBException {
         Socket incoming = serverSocket.accept();
 
+        Object object;
         try (ObjectInputStream ois = new ObjectInputStream(incoming.getInputStream())) {
-            return (TextMessage) unmarshaller.unmarshal(ois);
+            object = unmarshaller.unmarshal(ois);
         }
+
+        return object;
     }
 
 }

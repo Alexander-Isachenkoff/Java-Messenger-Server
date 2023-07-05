@@ -1,3 +1,6 @@
+package entities;
+
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -6,20 +9,20 @@ import java.io.Serializable;
 public class TextMessage implements Serializable {
 
     @XmlElement
-    private String name;
-    @XmlElement
+    private User user;
+    @XmlAttribute
     private String message;
 
     public TextMessage() {
     }
 
-    public TextMessage(String name, String message) {
-        this.name = name;
+    public TextMessage(User user, String message) {
+        this.user = user;
         this.message = message;
     }
 
-    public String getName() {
-        return name;
+    public User getUser() {
+        return user;
     }
 
     public String getMessage() {
@@ -32,7 +35,7 @@ public class TextMessage implements Serializable {
                 "{\n" +
                 "    name = '%s',\n" +
                 "    message = '%s'\n" +
-                "}", name, message);
+                "}", user, message);
     }
 
 }
