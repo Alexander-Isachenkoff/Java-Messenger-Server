@@ -1,6 +1,3 @@
-import entities.TextMessage;
-import entities.User;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -22,7 +19,7 @@ public class Server {
     public Server(Map<Class, Consumer> classMap) {
         this.map = classMap;
         try {
-            JAXBContext context = JAXBContext.newInstance(TextMessage.class, User.class);
+            JAXBContext context = JAXBContext.newInstance(classMap.keySet().toArray(new Class[0]));
             unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
