@@ -6,6 +6,7 @@ import entities.User;
 import requests.SignInRequest;
 import requests.SignInResponse;
 import requests.SignUpRequest;
+import requests.SignUpResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,12 +35,15 @@ public class MessagerServer {
         Optional<User> optionalUser = registeredUsers.stream()
                 .filter(u -> u.getName().equals(user.getName()))
                 .findFirst();
+        SignUpResponse response;
         if (optionalUser.isPresent()) {
-            System.out.println("Пользователь " + user.getName() + " уже зарегистрирован!");
+            response = SignUpResponse.USER_ALREADY_EXISTS;
         } else {
+            response = SignUpResponse.OK;
             registeredUsers.add(user);
-            System.out.println("Зарегистрирован " + user.getName());
         }
+
+        new ClientXML("127.0.0.1").post(response);
     }
 
     private void onSignIn(SignInRequest signInRequest) {
