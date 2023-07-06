@@ -3,10 +3,7 @@ package server;
 import client.ClientXML;
 import entities.TextMessage;
 import entities.User;
-import requests.SignInRequest;
-import requests.SignInResponse;
-import requests.SignUpRequest;
-import requests.SignUpResponse;
+import requests.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +20,13 @@ public class MessagerServer {
         builder.addClass(TextMessage.class, this::onMessageRecieved);
         builder.addClass(SignInRequest.class, this::onSignIn);
         builder.addClass(SignUpRequest.class, this::onSignUp);
+        builder.addClass(UsersListRequest.class, this::onUsersList);
         server = builder.build();
+    }
+
+    private void onUsersList(UsersListRequest request) {
+        UsersListResponse response = new UsersListResponse(registeredUsers);
+        new ClientXML("127.0.0.1").post(response);
     }
 
     private void onMessageRecieved(TextMessage m) {
@@ -40,10 +43,14 @@ public class MessagerServer {
             response = SignUpResponse.USER_ALREADY_EXISTS;
         } else {
             response = SignUpResponse.OK;
-            registeredUsers.add(user);
+            registerUser(user);
         }
 
         new ClientXML("127.0.0.1").post(response);
+    }
+
+    public void registerUser(User user) {
+        registeredUsers.add(user);
     }
 
     private void onSignIn(SignInRequest signInRequest) {
