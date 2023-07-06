@@ -51,17 +51,11 @@ public class MessagerServer {
         if (optionalUser.isPresent()) {
             if (optionalUser.get().getPassword().equals(user.getPassword())) {
                 connectedUsers.add(user);
-//                System.out.println("Подключен " + user.getName());
-//                response.response = "Подключен " + user.getName();
                 response = SignInResponse.OK;
             } else {
-//                System.out.println("Неверный пароль");
-//                response.response = "Неверный пароль";
                 response = SignInResponse.WRONG_PASSWORD;
             }
         } else {
-//            System.out.println("Не зарегистрирован пользователь " + user.getName());
-//            response.response = "Не зарегистрирован пользователь " + user.getName();
             response = SignInResponse.USER_NOT_FOUND;
         }
 
