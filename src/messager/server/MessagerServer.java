@@ -1,9 +1,16 @@
-package server;
+package messager.server;
 
-import client.ClientXML;
-import entities.TextMessage;
-import entities.User;
-import requests.*;
+import messager.client.ClientXML;
+import messager.entities.TextMessage;
+import messager.entities.User;
+import messager.requests.MessagesRequest;
+import messager.requests.SignInRequest;
+import messager.requests.SignUpRequest;
+import messager.requests.UsersListRequest;
+import messager.response.MessagesResponse;
+import messager.response.SignInResponse;
+import messager.response.SignUpResponse;
+import messager.response.UsersListResponse;
 
 import java.util.ArrayList;
 import java.util.List;

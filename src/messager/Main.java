@@ -1,5 +1,7 @@
-import entities.User;
-import server.MessagerServer;
+package messager;
+
+import messager.entities.User;
+import messager.server.MessagerServer;
 
 public class Main {
 
