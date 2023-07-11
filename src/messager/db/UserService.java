@@ -2,6 +2,7 @@ package messager.db;
 
 import messager.entities.User;
 
+import java.util.List;
 import java.util.Optional;
 
 public class UserService {
@@ -20,4 +21,7 @@ public class UserService {
         dao.deleteAll();
     }
 
+    public List<User> selectAll() {
+        return dao.selectAll();
+    }
 }

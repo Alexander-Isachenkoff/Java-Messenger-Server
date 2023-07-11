@@ -1,6 +1,7 @@
 package messager.server;
 
 import messager.client.ClientXML;
+import messager.db.UserService;
 import messager.entities.TextMessage;
 import messager.entities.User;
 import messager.requests.MessagesRequest;
@@ -19,8 +20,8 @@ import java.util.stream.Collectors;
 
 public class MessagerServer {
 
+    private final UserService userService = new UserService();
     private final Server server;
-    private final List<User> registeredUsers = new ArrayList<>();
     private final List<User> connectedUsers = new ArrayList<>();
 
     private final List<TextMessage> messages = new ArrayList<>();
@@ -44,7 +45,7 @@ public class MessagerServer {
     }
 
     private void onUsersList(UsersListRequest request) {
-        UsersListResponse response = new UsersListResponse(registeredUsers);
+        UsersListResponse response = new UsersListResponse(getRegisteredUsers());
         new ClientXML("127.0.0.1").post(response);
     }
 
@@ -54,7 +55,7 @@ public class MessagerServer {
 
     private void onSignUp(SignUpRequest signUpRequest) {
         User user = signUpRequest.getUser();
-        Optional<User> optionalUser = registeredUsers.stream()
+        Optional<User> optionalUser = getRegisteredUsers().stream()
                 .filter(u -> u.getName().equals(user.getName()))
                 .findFirst();
         SignUpResponse response;
@@ -69,12 +70,16 @@ public class MessagerServer {
     }
 
     public void registerUser(User user) {
-        registeredUsers.add(user);
+        userService.register(user);
+    }
+
+    public List<User> getRegisteredUsers() {
+        return userService.selectAll();
     }
 
     private void onSignIn(SignInRequest signInRequest) {
         User user = signInRequest.getUser();
-        Optional<User> optionalUser = registeredUsers.stream()
+        Optional<User> optionalUser = getRegisteredUsers().stream()
                 .filter(u -> u.getName().equals(user.getName()))
                 .findFirst();
         SignInResponse response;
