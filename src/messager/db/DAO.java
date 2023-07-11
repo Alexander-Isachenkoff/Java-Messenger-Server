@@ -9,11 +9,11 @@ import java.util.Optional;
 class DAO<T> {
     private final Class<T> tClass;
 
-    private DAO(Class<T> tClass) {
+    DAO(Class<T> tClass) {
         this.tClass = tClass;
     }
 
-    public static <T> DAO<T> of(Class<T> tClass) {
+    static <T> DAO<T> of(Class<T> tClass) {
         return new DAO<>(tClass);
     }
 
@@ -21,14 +21,14 @@ class DAO<T> {
         return HibernateUtil.getSession();
     }
 
-    public Optional<T> findById(Long id) {
+    Optional<T> findById(Long id) {
         Session session = openSession();
         T obj = session.get(tClass, id);
         session.close();
         return Optional.of(obj);
     }
 
-    public void save(T obj) {
+    void save(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.save(obj);
@@ -36,7 +36,7 @@ class DAO<T> {
         session.close();
     }
 
-    public void update(T obj) {
+    void update(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.update(obj);
@@ -44,7 +44,7 @@ class DAO<T> {
         session.close();
     }
 
-    public void saveOrUpdate(T obj) {
+    void saveOrUpdate(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.saveOrUpdate(obj);
@@ -52,7 +52,7 @@ class DAO<T> {
         session.close();
     }
 
-    public void delete(T obj) {
+    void delete(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.delete(obj);
@@ -60,14 +60,14 @@ class DAO<T> {
         session.close();
     }
 
-    public List<T> selectAll() {
+    List<T> selectAll() {
         Session session = openSession();
         List<T> list = session.createQuery("From " + tClass.getSimpleName()).list();
         session.close();
         return list;
     }
 
-    public void deleteAll() {
+    void deleteAll() {
         List<T> results = selectAll();
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();

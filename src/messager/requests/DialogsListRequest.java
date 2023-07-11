@@ -1,6 +1,5 @@
-package messager.response;
+package messager.requests;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import messager.entities.User;
@@ -10,13 +9,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @XmlRootElement
-public class SignInResponse {
+public class DialogsListRequest {
     @XmlElement
     private User user;
-    @XmlElement
-    private String status;
-
 }
-

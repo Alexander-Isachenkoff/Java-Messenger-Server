@@ -21,7 +21,7 @@ public class UserService {
         dao.deleteAll();
     }
 
-    public List<User> selectAll() {
+    public List<User> getRegisteredUsers() {
         return dao.selectAll();
     }
 }

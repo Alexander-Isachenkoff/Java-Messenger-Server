@@ -1,15 +1,29 @@
 package messager.debug;
 
+import messager.db.DialogService;
+import messager.db.UserService;
+import messager.entities.Dialog;
 import messager.entities.User;
-import messager.server.MessagerServer;
+import messager.server.MessengerServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 class MainTest {
+
+    private final UserService userService = new UserService();
+    private final DialogService dialogService = new DialogService();
+
+    private final User[] users = new User[]{
+            new User("me", "111"),
+            new User("he", "222"),
+            new User("she", "333"),
+            new User("they", "444")
+    };
 
     @BeforeEach
     void setUp() {
@@ -22,12 +36,13 @@ class MainTest {
 
     @Test
     void main() {
-        MessagerServer server = new MessagerServer();
+        MessengerServer server = new MessengerServer();
 
-        server.registerUser(new User("me", "123"));
-        server.registerUser(new User("he", "1234"));
-        server.registerUser(new User("she", "12345"));
-        server.registerUser(new User("they", "123456"));
+        for (User user : users) {
+            userService.register(user);
+        }
+
+        dialogService.add(new Dialog(Arrays.asList(users[0], users[1])));
 
         server.start();
     }

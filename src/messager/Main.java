@@ -1,11 +1,11 @@
 package messager;
 
-import messager.server.MessagerServer;
+import messager.server.MessengerServer;
 
 public class Main {
 
     public static void main(String[] args) {
-        MessagerServer server = new MessagerServer();
+        MessengerServer server = new MessengerServer();
         server.start();
     }
 
