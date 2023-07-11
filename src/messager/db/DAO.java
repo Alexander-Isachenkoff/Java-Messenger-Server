@@ -6,21 +6,28 @@ import org.hibernate.Transaction;
 import java.util.List;
 import java.util.Optional;
 
-abstract class DAO<T>
-{
+class DAO<T> {
+    private final Class<T> tClass;
+
+    private DAO(Class<T> tClass) {
+        this.tClass = tClass;
+    }
+
+    public static <T> DAO<T> of(Class<T> tClass) {
+        return new DAO<>(tClass);
+    }
+
     Session openSession() {
         return HibernateUtil.getSession();
     }
-    
+
     public Optional<T> findById(Long id) {
         Session session = openSession();
-        T obj = session.get(getLoadingClass(), id);
+        T obj = session.get(tClass, id);
         session.close();
         return Optional.of(obj);
     }
 
-    protected abstract Class<T> getLoadingClass();
-    
     public void save(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
@@ -28,7 +35,7 @@ abstract class DAO<T>
         tx1.commit();
         session.close();
     }
-    
+
     public void update(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
@@ -36,7 +43,7 @@ abstract class DAO<T>
         tx1.commit();
         session.close();
     }
-    
+
     public void saveOrUpdate(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
@@ -44,7 +51,7 @@ abstract class DAO<T>
         tx1.commit();
         session.close();
     }
-    
+
     public void delete(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
@@ -52,10 +59,10 @@ abstract class DAO<T>
         tx1.commit();
         session.close();
     }
-    
+
     public List<T> selectAll() {
         Session session = openSession();
-        List<T> list = session.createQuery("From " + getLoadingClass().getSimpleName()).list();
+        List<T> list = session.createQuery("From " + tClass.getSimpleName()).list();
         session.close();
         return list;
     }

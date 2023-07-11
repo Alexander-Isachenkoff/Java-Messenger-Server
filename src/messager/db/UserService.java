@@ -6,12 +6,7 @@ import java.util.Optional;
 
 public class UserService {
 
-    private DAO<User> dao = new DAO<User>() {
-        @Override
-        protected Class<User> getLoadingClass() {
-            return User.class;
-        }
-    };
+    private final DAO<User> dao = DAO.of(User.class);
 
     public void register(User user) {
         dao.save(user);
