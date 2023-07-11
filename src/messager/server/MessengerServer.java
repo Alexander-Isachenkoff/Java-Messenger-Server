@@ -2,6 +2,7 @@ package messager.server;
 
 import messager.client.ClientXML;
 import messager.db.DialogService;
+import messager.db.MessagesService;
 import messager.db.UserService;
 import messager.entities.Dialog;
 import messager.entities.TextMessage;
@@ -11,6 +12,7 @@ import messager.requests.MessagesRequest;
 import messager.requests.SignInRequest;
 import messager.requests.SignUpRequest;
 import messager.response.DialogsListResponse;
+import messager.response.MessagesResponse;
 import messager.response.SignInResponse;
 import messager.response.SignUpResponse;
 
@@ -22,10 +24,9 @@ public class MessengerServer {
 
     private final UserService userService = new UserService();
     private final DialogService dialogService = new DialogService();
+    private final MessagesService messagesService = new MessagesService();
     private final Server server;
     private final List<User> connectedUsers = new ArrayList<>();
-
-    private final List<TextMessage> messages = new ArrayList<>();
 
     public MessengerServer() {
         ServerBuilder builder = new ServerBuilder();
@@ -38,11 +39,8 @@ public class MessengerServer {
     }
 
     private void onMessagesRequest(MessagesRequest request) {
-//        String recipientName = request.getUser().getName();
-//        List<TextMessage> messagesForUser = messages.stream()
-//                .filter(message -> message.getUserTo().getName().equals(recipientName))
-//                .collect(Collectors.toList());
-//        new ClientXML("127.0.0.1").post(new MessagesResponse(messagesForUser));
+        List<TextMessage> messages = messagesService.getMessages(request.getDialog());
+        new ClientXML("127.0.0.1").post(new MessagesResponse(messages));
     }
 
     private void onDialogsList(DialogsListRequest request) {
@@ -52,7 +50,7 @@ public class MessengerServer {
     }
 
     private void onMessageRecieved(TextMessage message) {
-        messages.add(message);
+        messagesService.add(message);
     }
 
     private void onSignUp(SignUpRequest signUpRequest) {
