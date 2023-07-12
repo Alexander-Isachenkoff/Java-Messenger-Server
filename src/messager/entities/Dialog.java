@@ -30,7 +30,7 @@ public class Dialog {
     @XmlAttribute
     private String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     @XmlElementWrapper(name = "users")
     @XmlElement(name = "user")

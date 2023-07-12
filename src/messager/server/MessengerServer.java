@@ -11,6 +11,7 @@ import messager.requests.*;
 import messager.response.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class MessengerServer {
         builder.addClass(DialogsListRequest.class, this::onDialogsList);
         builder.addClass(MessagesRequest.class, this::onMessagesRequest);
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
+        builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
         server = builder.build();
     }
 
@@ -88,6 +90,13 @@ public class MessengerServer {
     private void onUsersRequest(UsersListRequest request) {
         List<User> registeredUsers = userService.getRegisteredUsers();
         UsersListResponse response = new UsersListResponse(registeredUsers);
+        new ClientXML("127.0.0.1").post(response);
+    }
+
+    private void onAddDialogRequest(AddDialogRequest request) {
+        Dialog dialog = new Dialog(null, Arrays.asList(request.getUserFrom(), request.getUserTo()));
+        dialogService.add(dialog);
+        AddDialogResponse response = new AddDialogResponse(dialog);
         new ClientXML("127.0.0.1").post(response);
     }
 
