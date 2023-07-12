@@ -39,7 +39,7 @@ class MainTest {
     }
 
     @Test
-    void main() {
+    void mainTest() {
         MessengerServer server = new MessengerServer();
 
         for (User user : users) {

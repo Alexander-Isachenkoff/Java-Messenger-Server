@@ -79,15 +79,15 @@ public class MessengerServer {
         if (optionalUser.isPresent()) {
             if (optionalUser.get().getPassword().equals(password)) {
                 connectedUsers.add(optionalUser.get());
-//                response = new SignInResponse(optionalUser.get(), SignInStatus.OK);
-                response = new SignInResponse(optionalUser.get(), "OK");
+                response = new SignInResponse(optionalUser.get(), SignInResponse.SignInStatus.OK);
+//                response = new SignInResponse(optionalUser.get(), "OK");
             } else {
-//                response = new SignInResponse(null, SignInStatus.WRONG_PASSWORD);
-                response = new SignInResponse(null, "WRONG_PASSWORD");
+                response = new SignInResponse(null, SignInResponse.SignInStatus.WRONG_PASSWORD);
+//                response = new SignInResponse(null, "WRONG_PASSWORD");
             }
         } else {
-//            response = new SignInResponse(null, SignInStatus.USER_NOT_FOUND);
-            response = new SignInResponse(null, "USER_NOT_FOUND");
+            response = new SignInResponse(null, SignInResponse.SignInStatus.USER_NOT_FOUND);
+//            response = new SignInResponse(null, "USER_NOT_FOUND");
         }
 
         new ClientXML("127.0.0.1").post(response);

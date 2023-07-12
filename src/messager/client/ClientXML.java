@@ -8,6 +8,8 @@ import java.io.ObjectOutputStream;
 
 public class ClientXML extends Client {
 
+    private static final boolean SHOW_XML = true;
+
     public ClientXML(String address) {
         super(address);
     }
@@ -24,6 +26,10 @@ public class ClientXML extends Client {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(object, os);
+            if (SHOW_XML) {
+                marshaller.marshal(object, System.out);
+                System.out.println();
+            }
         } catch (JAXBException | IOException e) {
             throw new RuntimeException(e);
         }
