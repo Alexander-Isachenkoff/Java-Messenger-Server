@@ -7,14 +7,8 @@ import messager.db.UserService;
 import messager.entities.Dialog;
 import messager.entities.TextMessage;
 import messager.entities.User;
-import messager.requests.DialogsListRequest;
-import messager.requests.MessagesRequest;
-import messager.requests.SignInRequest;
-import messager.requests.SignUpRequest;
-import messager.response.DialogsListResponse;
-import messager.response.MessagesResponse;
-import messager.response.SignInResponse;
-import messager.response.SignUpResponse;
+import messager.requests.*;
+import messager.response.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +29,7 @@ public class MessengerServer {
         builder.addClass(SignUpRequest.class, this::onSignUp);
         builder.addClass(DialogsListRequest.class, this::onDialogsList);
         builder.addClass(MessagesRequest.class, this::onMessagesRequest);
+        builder.addClass(UsersListRequest.class, this::onUsersRequest);
         server = builder.build();
     }
 
@@ -80,16 +75,19 @@ public class MessengerServer {
             if (optionalUser.get().getPassword().equals(password)) {
                 connectedUsers.add(optionalUser.get());
                 response = new SignInResponse(optionalUser.get(), SignInResponse.SignInStatus.OK);
-//                response = new SignInResponse(optionalUser.get(), "OK");
             } else {
                 response = new SignInResponse(null, SignInResponse.SignInStatus.WRONG_PASSWORD);
-//                response = new SignInResponse(null, "WRONG_PASSWORD");
             }
         } else {
             response = new SignInResponse(null, SignInResponse.SignInStatus.USER_NOT_FOUND);
-//            response = new SignInResponse(null, "USER_NOT_FOUND");
         }
 
+        new ClientXML("127.0.0.1").post(response);
+    }
+
+    private void onUsersRequest(UsersListRequest request) {
+        List<User> registeredUsers = userService.getRegisteredUsers();
+        UsersListResponse response = new UsersListResponse(registeredUsers);
         new ClientXML("127.0.0.1").post(response);
     }
 
