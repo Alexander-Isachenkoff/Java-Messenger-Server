@@ -31,10 +31,10 @@ public class MessengerServer {
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
         builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
         server = builder.build();
-        server.setConsumer(response -> {
+        server.setConsumer((response, address) -> {
             if (response != null) {
                 ClientXML client = new ClientXML();
-                client.post(response, "127.0.0.1");
+                client.post(response, address);
             }
         });
     }

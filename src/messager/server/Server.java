@@ -8,7 +8,7 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public class Server {
@@ -18,7 +18,7 @@ public class Server {
     private ServerSocket serverSocket;
 
     private final Map<Class, Function> map;
-    private Consumer<Object> consumer = o -> {
+    private BiConsumer<Object, String> consumer = (o, s) -> {
     };
 
     public Server(Map<Class, Function> classMap) {
@@ -50,12 +50,12 @@ public class Server {
             Function classConsumer = map.get(object.getClass());
             if (classConsumer != null) {
                 Object result = classConsumer.apply(object);
-                consumer.accept(result);
+                consumer.accept(result, serverSocket.getInetAddress().getHostAddress());
             }
         }
     }
 
-    public void setConsumer(Consumer<Object> consumer) {
+    public void setConsumer(BiConsumer<Object, String> consumer) {
         this.consumer = consumer;
     }
 
