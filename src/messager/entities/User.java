@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @EqualsAndHashCode
@@ -29,15 +30,18 @@ public class User {
     @XmlAttribute
     private String password;
 
-//    @EqualsAndHashCode.Exclude
-//    @ManyToMany
-//    @XmlElementWrapper
-//    @XmlElement
-//    private List<Dialog> dialogs = new ArrayList<>();
+    @XmlElement
+    private String encodedImage;
 
     public User(String name, String password) {
         this.name = name;
         this.password = password;
+    }
+
+    public User(String name, String password, String encodedImage) {
+        this.name = name;
+        this.password = password;
+        this.encodedImage = encodedImage;
     }
 
 }
