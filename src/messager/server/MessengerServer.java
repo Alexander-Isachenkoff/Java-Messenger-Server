@@ -10,7 +10,6 @@ import messager.entities.User;
 import messager.requests.*;
 import messager.response.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,6 @@ public class MessengerServer {
     private final DialogService dialogService = new DialogService();
     private final MessagesService messagesService = new MessagesService();
     private final Server server;
-    private final List<User> connectedUsers = new ArrayList<>();
 
     public MessengerServer() {
         ServerBuilder builder = new ServerBuilder();
@@ -33,24 +31,30 @@ public class MessengerServer {
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
         builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
         server = builder.build();
+        server.setConsumer(response -> {
+            if (response != null) {
+                ClientXML client = new ClientXML();
+                client.post(response, "127.0.0.1");
+            }
+        });
     }
 
-    private void onMessagesRequest(MessagesRequest request) {
+    private MessagesResponse onMessagesRequest(MessagesRequest request) {
         List<TextMessage> messages = messagesService.getMessages(request.getDialog());
-        new ClientXML("127.0.0.1").post(new MessagesResponse(messages));
+        return new MessagesResponse(messages);
     }
 
-    private void onDialogsList(DialogsListRequest request) {
+    private DialogsListResponse onDialogsList(DialogsListRequest request) {
         List<Dialog> dialogs = dialogService.getDialogsFor(request.getUser());
-        DialogsListResponse response = new DialogsListResponse(dialogs);
-        new ClientXML("127.0.0.1").post(response);
+        return new DialogsListResponse(dialogs);
     }
 
-    private void onMessageRecieved(TextMessage message) {
+    private Object onMessageRecieved(TextMessage message) {
         messagesService.add(message);
+        return null;
     }
 
-    private void onSignUp(SignUpRequest signUpRequest) {
+    private SignUpResponse onSignUp(SignUpRequest signUpRequest) {
         User user = signUpRequest.getUser();
         Optional<User> optionalUser = userService.getRegisteredUsers().stream()
                 .filter(u -> u.getName().equals(user.getName()))
@@ -63,10 +67,10 @@ public class MessengerServer {
             userService.register(user);
         }
 
-        new ClientXML("127.0.0.1").post(response);
+        return response;
     }
 
-    private void onSignIn(SignInRequest signInRequest) {
+    private SignInResponse onSignIn(SignInRequest signInRequest) {
         String userName = signInRequest.getUserName();
         String password = signInRequest.getPassword();
         Optional<User> optionalUser = userService.getRegisteredUsers().stream()
@@ -75,7 +79,6 @@ public class MessengerServer {
         SignInResponse response;
         if (optionalUser.isPresent()) {
             if (optionalUser.get().getPassword().equals(password)) {
-                connectedUsers.add(optionalUser.get());
                 response = new SignInResponse(optionalUser.get(), SignInResponse.SignInStatus.OK);
             } else {
                 response = new SignInResponse(null, SignInResponse.SignInStatus.WRONG_PASSWORD);
@@ -84,20 +87,18 @@ public class MessengerServer {
             response = new SignInResponse(null, SignInResponse.SignInStatus.USER_NOT_FOUND);
         }
 
-        new ClientXML("127.0.0.1").post(response);
+        return response;
     }
 
-    private void onUsersRequest(UsersListRequest request) {
+    private UsersListResponse onUsersRequest(UsersListRequest request) {
         List<User> registeredUsers = userService.getRegisteredUsers();
-        UsersListResponse response = new UsersListResponse(registeredUsers);
-        new ClientXML("127.0.0.1").post(response);
+        return new UsersListResponse(registeredUsers);
     }
 
-    private void onAddDialogRequest(AddDialogRequest request) {
+    private AddDialogResponse onAddDialogRequest(AddDialogRequest request) {
         Dialog dialog = new Dialog(null, Arrays.asList(request.getUserFrom(), request.getUserTo()));
         dialogService.add(dialog);
-        AddDialogResponse response = new AddDialogResponse(dialog);
-        new ClientXML("127.0.0.1").post(response);
+        return new AddDialogResponse(dialog);
     }
 
     public void start() {

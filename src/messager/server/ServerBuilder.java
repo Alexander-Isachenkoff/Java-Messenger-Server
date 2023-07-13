@@ -2,13 +2,13 @@ package messager.server;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ServerBuilder {
 
-    private final Map<Class, Consumer> map = new HashMap<>();
+    private final Map<Class, Function> map = new HashMap<>();
 
-    public <T> void addClass(Class<T> aClass, Consumer<T> onAccepted) {
+    public <T, R> void addClass(Class<T> aClass, Function<T, R> onAccepted) {
         map.put(aClass, onAccepted);
     }
 

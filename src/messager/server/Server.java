@@ -9,6 +9,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class Server {
 
@@ -16,9 +17,11 @@ public class Server {
     private final Unmarshaller unmarshaller;
     private ServerSocket serverSocket;
 
-    private final Map<Class, Consumer> map;
+    private final Map<Class, Function> map;
+    private Consumer<Object> consumer = o -> {
+    };
 
-    public Server(Map<Class, Consumer> classMap) {
+    public Server(Map<Class, Function> classMap) {
         this.map = classMap;
         try {
             JAXBContext context = JAXBContext.newInstance(classMap.keySet().toArray(new Class[0]));
@@ -44,11 +47,16 @@ public class Server {
                 e.printStackTrace();
                 continue;
             }
-            Consumer consumer = map.get(object.getClass());
-            if (consumer != null) {
-                consumer.accept(object);
+            Function classConsumer = map.get(object.getClass());
+            if (classConsumer != null) {
+                Object result = classConsumer.apply(object);
+                consumer.accept(result);
             }
         }
+    }
+
+    public void setConsumer(Consumer<Object> consumer) {
+        this.consumer = consumer;
     }
 
     private Object getObject() throws IOException, JAXBException {

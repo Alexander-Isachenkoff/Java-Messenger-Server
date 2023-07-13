@@ -10,19 +10,14 @@ public class ClientXML extends Client {
 
     private static final boolean SHOW_XML = true;
 
-    public ClientXML(String address) {
-        super(address);
-    }
-
-    @Override
-    public void post(Object object) {
+    public void post(Object object, String address) {
         JAXBContext context;
         try {
             context = JAXBContext.newInstance(object.getClass());
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }
-        try (ObjectOutputStream os = new ObjectOutputStream(getSocket().getOutputStream())) {
+        try (ObjectOutputStream os = new ObjectOutputStream(getSocket(address).getOutputStream())) {
             Marshaller marshaller = context.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
             marshaller.marshal(object, os);
