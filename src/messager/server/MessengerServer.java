@@ -9,7 +9,9 @@ import messager.entities.TextMessage;
 import messager.entities.User;
 import messager.requests.*;
 import messager.response.*;
+import messager.util.ImageUtils;
 
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +64,14 @@ public class MessengerServer {
         if (optionalUser.isPresent()) {
             response = new SignUpResponse(null, SignUpResponse.SignUpStatus.USER_ALREADY_EXISTS);
         } else {
-            User user = new User(request.getUserName(), request.getPassword(), request.getEncodedImage());
+            String encodedImage = null;
+            if (request.getEncodedImage() != null) {
+                BufferedImage image = ImageUtils.decodeImage(request.getEncodedImage());
+                image = ImageUtils.cropImageAtCenter(image);
+                image = ImageUtils.scaleImage(image, 48, 48);
+                encodedImage = ImageUtils.encodeImage(image, request.getImageFormat());
+            }
+            User user = new User(request.getUserName(), request.getPassword(), encodedImage);
             response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
             userService.register(user);
         }
