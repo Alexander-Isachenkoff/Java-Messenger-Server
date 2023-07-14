@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 class DAO<T> {
-    private final Class<T> tClass;
+
+    protected final Class<T> tClass;
 
     DAO(Class<T> tClass) {
         this.tClass = tClass;

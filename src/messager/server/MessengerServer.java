@@ -47,7 +47,7 @@ public class MessengerServer {
     }
 
     private DialogsListResponse onDialogsList(DialogsListRequest request) {
-        List<Dialog> dialogs = dialogService.getDialogsFor(request.getUser());
+        List<Dialog> dialogs = dialogService.getDialogsFor(request.getUserId());
         return new DialogsListResponse(dialogs);
     }
 

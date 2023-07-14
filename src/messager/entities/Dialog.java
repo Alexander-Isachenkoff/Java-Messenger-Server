@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.ArrayList;
 import java.util.List;
 
 @EqualsAndHashCode
@@ -34,13 +33,13 @@ public class Dialog {
     @LazyCollection(LazyCollectionOption.FALSE)
     @XmlElementWrapper(name = "users")
     @XmlElement(name = "user")
-    private List<User> users = new ArrayList<>();
+    private List<User> users;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @LazyCollection(LazyCollectionOption.FALSE)
     @XmlElementWrapper(name = "messages")
     @XmlElement(name = "message")
-    private final List<TextMessage> messages = new ArrayList<>();
+    private List<TextMessage> messages;
 
     public Dialog(List<User> users) {
         this.users = users;
