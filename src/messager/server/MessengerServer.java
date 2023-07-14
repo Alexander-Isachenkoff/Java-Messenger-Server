@@ -54,16 +54,16 @@ public class MessengerServer {
         return null;
     }
 
-    private SignUpResponse onSignUp(SignUpRequest signUpRequest) {
-        User user = signUpRequest.getUser();
+    private SignUpResponse onSignUp(SignUpRequest request) {
         Optional<User> optionalUser = userService.getRegisteredUsers().stream()
-                .filter(u -> u.getName().equals(user.getName()))
+                .filter(u -> u.getName().equals(request.getUserName()))
                 .findFirst();
         SignUpResponse response;
         if (optionalUser.isPresent()) {
-            response = SignUpResponse.USER_ALREADY_EXISTS;
+            response = new SignUpResponse(null, SignUpResponse.SignUpStatus.USER_ALREADY_EXISTS);
         } else {
-            response = SignUpResponse.OK;
+            User user = new User(request.getUserName(), request.getPassword(), request.getEncodedImage());
+            response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
             userService.register(user);
         }
 
