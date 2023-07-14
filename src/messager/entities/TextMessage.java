@@ -8,14 +8,13 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 
 @Entity
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @XmlRootElement
-public class TextMessage implements Serializable {
+public class TextMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
