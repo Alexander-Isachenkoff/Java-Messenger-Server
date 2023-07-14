@@ -1,6 +1,5 @@
 package messager.db;
 
-import messager.entities.Dialog;
 import messager.entities.TextMessage;
 
 import java.util.List;
@@ -15,9 +14,9 @@ public class MessagesService extends DAO<TextMessage> {
         save(message);
     }
 
-    public List<TextMessage> getMessages(Dialog dialog) {
+    public List<TextMessage> getMessages(long dialogId) {
         List<TextMessage> messages = selectAll().stream()
-                .filter(message -> message.getDialog().getId() == dialog.getId())
+                .filter(message -> message.getDialog().getId() == dialogId)
                 .collect(Collectors.toList());
         return messages;
     }

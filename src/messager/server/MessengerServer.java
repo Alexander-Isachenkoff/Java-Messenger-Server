@@ -42,7 +42,7 @@ public class MessengerServer {
     }
 
     private MessagesResponse onMessagesRequest(MessagesRequest request) {
-        List<TextMessage> messages = messagesService.getMessages(request.getDialog());
+        List<TextMessage> messages = messagesService.getMessages(request.getDialogId());
         return new MessagesResponse(messages);
     }
 
