@@ -100,8 +100,8 @@ public class MessengerServer {
     }
 
     private UsersListResponse onUsersRequest(UsersListRequest request) {
-        List<User> registeredUsers = userService.getRegisteredUsers();
-        return new UsersListResponse(registeredUsers);
+        List<User> availableUsers = userService.getUsersWithoutDialog(request.getUserId());
+        return new UsersListResponse(availableUsers);
     }
 
     private AddDialogResponse onAddDialogRequest(AddDialogRequest request) {
