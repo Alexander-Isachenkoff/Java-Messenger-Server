@@ -31,3 +31,4 @@ bin/
 *.iml
 /.idea/
 /messenger.sqlite
+/resources/META-INF/MANIFEST.MF
