@@ -25,7 +25,7 @@ public class Dialog {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     @XmlAttribute
-    private Long id;
+    private long id;
 
     @XmlAttribute
     private String name;

@@ -1,5 +1,7 @@
 package messager.server;
 
+import messager.requests.Request;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -17,11 +19,11 @@ public class Server {
     private final Unmarshaller unmarshaller;
     private ServerSocket serverSocket;
 
-    private final Map<Class, Function> map;
+    private final Map<Class<? extends Request>, Function> map;
     private BiConsumer<Object, String> consumer = (o, s) -> {
     };
 
-    public Server(Map<Class, Function> classMap) {
+    public Server(Map<Class<? extends Request>, Function> classMap) {
         this.map = classMap;
         try {
             JAXBContext context = JAXBContext.newInstance(classMap.keySet().toArray(new Class[0]));

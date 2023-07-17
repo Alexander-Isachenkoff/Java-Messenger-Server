@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement
-public class SignInRequest {
+public class SignInRequest implements Request {
     @XmlElement
     private String userName;
     @XmlElement

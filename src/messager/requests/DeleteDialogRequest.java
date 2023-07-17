@@ -1,5 +1,6 @@
 package messager.requests;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -8,8 +9,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @XmlRootElement
-public class DialogsListRequest implements Request {
+public class DeleteDialogRequest implements Request {
     @XmlElement
-    private long userId;
+    private long dialogId;
 }

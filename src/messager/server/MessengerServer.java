@@ -25,13 +25,14 @@ public class MessengerServer {
 
     public MessengerServer() {
         ServerBuilder builder = new ServerBuilder();
-        builder.addClass(TextMessage.class, this::onMessageRecieved);
+        builder.addClass(AddMessageRequest.class, this::onMessageRecieved);
         builder.addClass(SignInRequest.class, this::onSignIn);
         builder.addClass(SignUpRequest.class, this::onSignUp);
         builder.addClass(DialogsListRequest.class, this::onDialogsList);
         builder.addClass(MessagesRequest.class, this::onMessagesRequest);
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
         builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
+        builder.addClass(DeleteDialogRequest.class, this::onDeleteDialogRequest);
         server = builder.build();
         server.setConsumer((response, address) -> {
             if (response != null) {
@@ -51,8 +52,16 @@ public class MessengerServer {
         return new DialogsListResponse(dialogs);
     }
 
-    private Object onMessageRecieved(TextMessage message) {
-        messagesService.add(message);
+    private Object onMessageRecieved(AddMessageRequest request) {
+        User userFrom = userService.findById(request.getUserId()).get();
+        Dialog dialog = dialogService.findById(request.getDialogId()).get();
+        TextMessage textMessage = new TextMessage(
+                userFrom,
+                request.getText(),
+                request.getDateTime(),
+                dialog
+        );
+        messagesService.add(textMessage);
         return null;
     }
 
@@ -108,6 +117,11 @@ public class MessengerServer {
         Dialog dialog = new Dialog(null, Arrays.asList(request.getUserFrom(), request.getUserTo()));
         dialogService.add(dialog);
         return new AddDialogResponse(dialog);
+    }
+
+    private Void onDeleteDialogRequest(DeleteDialogRequest request) {
+        dialogService.findById(request.getDialogId()).ifPresent(dialogService::delete);
+        return null;
     }
 
     public void start() {

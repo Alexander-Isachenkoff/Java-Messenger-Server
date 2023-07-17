@@ -20,7 +20,7 @@ public class TextMessage {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     @XmlAttribute
-    private Long id;
+    private long id;
 
     @XmlElement
     @ManyToOne

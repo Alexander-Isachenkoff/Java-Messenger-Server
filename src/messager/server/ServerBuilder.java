@@ -1,14 +1,16 @@
 package messager.server;
 
+import messager.requests.Request;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
 public class ServerBuilder {
 
-    private final Map<Class, Function> map = new HashMap<>();
+    private final Map<Class<? extends Request>, Function> map = new HashMap<>();
 
-    public <T, R> void addClass(Class<T> aClass, Function<T, R> onAccepted) {
+    public <T extends Request, R> void addClass(Class<T> aClass, Function<T, R> onAccepted) {
         map.put(aClass, onAccepted);
     }
 

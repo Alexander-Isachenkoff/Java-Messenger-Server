@@ -20,14 +20,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
     @XmlAttribute
-    private Long id;
+    private long id;
 
     @Column(unique = true, nullable = false)
     @XmlAttribute
     private String name;
 
     @Column(nullable = false)
-    @XmlAttribute
     private String password;
 
     @XmlElement

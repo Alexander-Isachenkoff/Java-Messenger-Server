@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 
 public class ClientXML extends Client {
 
-    private static final boolean SHOW_XML = false;
+    private static final boolean SHOW_XML = true;
 
     public void post(Object object, String address) {
         JAXBContext context;

@@ -22,7 +22,7 @@ class DAO<T> {
         return HibernateUtil.getSession();
     }
 
-    Optional<T> findById(Long id) {
+    public Optional<T> findById(Long id) {
         Session session = openSession();
         T obj = session.get(tClass, id);
         session.close();
@@ -53,7 +53,7 @@ class DAO<T> {
         session.close();
     }
 
-    void delete(T obj) {
+    public void delete(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.delete(obj);
