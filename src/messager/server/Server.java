@@ -1,5 +1,6 @@
 package messager.server;
 
+import lombok.SneakyThrows;
 import messager.requests.Request;
 
 import javax.xml.bind.JAXBContext;
@@ -33,6 +34,7 @@ public class Server {
         }
     }
 
+    @SneakyThrows
     public void start() {
         try {
             serverSocket = new ServerSocket(PORT);
@@ -42,34 +44,21 @@ public class Server {
         System.out.println("Готов!\n");
 
         while (true) {
+            Socket incoming = serverSocket.accept();
             Object object;
-            try {
-                object = getObject();
-            } catch (IOException | JAXBException e) {
-                e.printStackTrace();
-                continue;
+            try (ObjectInputStream ois = new ObjectInputStream(incoming.getInputStream())) {
+                object = unmarshaller.unmarshal(ois);
             }
             Function classConsumer = map.get(object.getClass());
             if (classConsumer != null) {
                 Object result = classConsumer.apply(object);
-                consumer.accept(result, serverSocket.getInetAddress().getHostAddress());
+                consumer.accept(result, incoming.getInetAddress().getHostAddress());
             }
         }
     }
 
     public void setConsumer(BiConsumer<Object, String> consumer) {
         this.consumer = consumer;
-    }
-
-    private Object getObject() throws IOException, JAXBException {
-        Socket incoming = serverSocket.accept();
-
-        Object object;
-        try (ObjectInputStream ois = new ObjectInputStream(incoming.getInputStream())) {
-            object = unmarshaller.unmarshal(ois);
-        }
-
-        return object;
     }
 
 }
