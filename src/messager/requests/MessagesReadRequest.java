@@ -5,17 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement
-public class MessagesRequest implements Request {
-    @XmlElement
-    private long dialogId;
+public class MessagesReadRequest implements Request {
     @XmlElement
     private long userId;
-    @XmlElement
-    private boolean unreadOnly;
+
+    @XmlElementWrapper(name = "Messages")
+    @XmlElement(name = "MessageId")
+    private List<Long> readMessagesId;
 }

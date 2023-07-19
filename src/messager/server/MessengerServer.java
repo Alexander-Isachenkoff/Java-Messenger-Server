@@ -15,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessengerServer {
 
@@ -33,6 +34,7 @@ public class MessengerServer {
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
         builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
         builder.addClass(DeleteDialogRequest.class, this::onDeleteDialogRequest);
+        builder.addClass(MessagesReadRequest.class, this::onMessagesReadRequest);
         server = builder.build();
         server.setConsumer((response, address) -> {
             if (response != null) {
@@ -42,8 +44,22 @@ public class MessengerServer {
         });
     }
 
+    private Void onMessagesReadRequest(MessagesReadRequest request) {
+        for (Long messageId : request.getReadMessagesId()) {
+            TextMessage message = messagesService.findById(messageId).get();
+            message.getReadBy().add(userService.findById(request.getUserId()).get());
+            messagesService.update(message);
+        }
+        return null;
+    }
+
     private MessagesResponse onMessagesRequest(MessagesRequest request) {
         List<TextMessage> messages = messagesService.getMessages(request.getDialogId());
+        if (request.isUnreadOnly()) {
+            messages = messages.stream()
+                    .filter(message -> message.getReadBy().stream().map(User::getId).noneMatch(aLong -> aLong == request.getUserId()))
+                    .collect(Collectors.toList());
+        }
         return new MessagesResponse(messages);
     }
 

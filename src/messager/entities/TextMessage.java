@@ -3,11 +3,14 @@ package messager.entities;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,8 +36,11 @@ public class TextMessage {
     private String dateTime;
 
     @ManyToOne
-    @XmlElement
     private Dialog dialog;
+
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private List<User> readBy;
 
     public TextMessage(User userFrom, String message, String dateTime, Dialog dialog) {
         this.userFrom = userFrom;

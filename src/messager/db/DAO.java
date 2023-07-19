@@ -37,7 +37,7 @@ class DAO<T> {
         session.close();
     }
 
-    void update(T obj) {
+    public void update(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.update(obj);
