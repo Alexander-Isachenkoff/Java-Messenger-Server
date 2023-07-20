@@ -11,8 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 class MainTest {
@@ -21,7 +19,7 @@ class MainTest {
     private final PersonalDialogService personalDialogService = new PersonalDialogService();
     private final MessagesService messagesService = new MessagesService();
 
-    private final User[] users = new User[]{
+    private final User[] users = {
             new User("me", "111"),
             new User("he", "222"),
             new User("she", "333"),
@@ -30,14 +28,7 @@ class MainTest {
 
     @BeforeEach
     void setUp() {
-        try {
-            File file = new File("messenger.sqlite");
-            if (file.exists()) {
-                Files.delete(file.toPath());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new File("messenger.sqlite").delete();
     }
 
     @Test
