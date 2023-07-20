@@ -29,7 +29,7 @@ class DAO<T> {
         return Optional.of(obj);
     }
 
-    void save(T obj) {
+    public void save(T obj) {
         Session session = openSession();
         Transaction tx1 = session.beginTransaction();
         session.save(obj);
@@ -61,7 +61,7 @@ class DAO<T> {
         session.close();
     }
 
-    List<T> selectAll() {
+    public List<T> selectAll() {
         Session session = openSession();
         List<T> list = session.createQuery("From " + tClass.getSimpleName()).list();
         session.close();

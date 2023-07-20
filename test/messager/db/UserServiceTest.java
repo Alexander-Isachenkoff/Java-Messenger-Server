@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserServiceTest {
 
@@ -21,7 +22,7 @@ class UserServiceTest {
     @Test
     void register() {
         User user = new User("user1", "123456");
-        service.register(user);
+        service.save(user);
         Long id = user.getId();
 
         Optional<User> optionalUser = service.findById(id);

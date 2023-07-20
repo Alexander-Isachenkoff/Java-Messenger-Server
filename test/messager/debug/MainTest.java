@@ -43,7 +43,7 @@ class MainTest {
         MessengerServer server = new MessengerServer();
 
         for (User user : users) {
-            userService.register(user);
+            userService.save(user);
         }
 
         Dialog dialog = new Dialog(Arrays.asList(users[0], users[1]));

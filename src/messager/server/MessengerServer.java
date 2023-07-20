@@ -82,7 +82,7 @@ public class MessengerServer {
     }
 
     private SignUpResponse onSignUp(SignUpRequest request) {
-        Optional<User> optionalUser = userService.getRegisteredUsers().stream()
+        Optional<User> optionalUser = userService.selectAll().stream()
                 .filter(u -> u.getName().equals(request.getUserName()))
                 .findFirst();
         SignUpResponse response;
@@ -98,7 +98,7 @@ public class MessengerServer {
             }
             User user = new User(request.getUserName(), request.getPassword(), encodedImage);
             response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
-            userService.register(user);
+            userService.save(user);
         }
 
         return response;
@@ -107,7 +107,7 @@ public class MessengerServer {
     private SignInResponse onSignIn(SignInRequest signInRequest) {
         String userName = signInRequest.getUserName();
         String password = signInRequest.getPassword();
-        Optional<User> optionalUser = userService.getRegisteredUsers().stream()
+        Optional<User> optionalUser = userService.selectAll().stream()
                 .filter(user -> user.getName().equals(userName))
                 .findFirst();
         SignInResponse response;

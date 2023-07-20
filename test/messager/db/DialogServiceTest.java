@@ -26,7 +26,7 @@ class DialogServiceTest {
         dialogService.deleteAll();
 
         for (User user : users) {
-            userService.register(user);
+            userService.save(user);
         }
     }
 

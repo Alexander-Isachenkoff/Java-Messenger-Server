@@ -40,7 +40,7 @@ public class Dialog {
     @LazyCollection(LazyCollectionOption.FALSE)
     @XmlElementWrapper(name = "messages")
     @XmlElement(name = "message")
-    private final List<TextMessage> messages = new ArrayList<>();
+    private List<TextMessage> messages = new ArrayList<>();
 
     public Dialog(List<User> users) {
         this.users = users;
@@ -49,6 +49,10 @@ public class Dialog {
     public Dialog(String name, List<User> users) {
         this.name = name;
         this.users = users;
+    }
+
+    public boolean hasUser(long userId) {
+        return getUsers().stream().map(User::getId).anyMatch(id -> id == userId);
     }
 
 }
