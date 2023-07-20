@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Getter
 @NoArgsConstructor
 @XmlRootElement
-public class DialogsListRequest implements Request {
+public class PersonalDialogsRequest implements Request {
     @XmlElement
     private long userId;
 }

@@ -1,9 +1,12 @@
 package messager.db;
 
 import messager.entities.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,11 +14,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class UserServiceTest {
 
-    private UserService service;
+    private final UserService service = new UserService();
+
+    private final User[] users = {
+            new User("user1", "111"),
+            new User("user2", "222"),
+            new User("user3", "333")
+    };
+
+    @BeforeAll
+    static void setUp() {
+        new File("messenger.sqlite").delete();
+    }
 
     @BeforeEach
-    void setUp() {
-        service = new UserService();
+    void reset() {
         service.deleteAll();
     }
 
@@ -28,6 +41,14 @@ class UserServiceTest {
         Optional<User> optionalUser = service.findById(id);
         assertTrue(optionalUser.isPresent());
         assertEquals(user, optionalUser.get());
+    }
+
+    @Test
+    void selectAll() {
+        for (User user : users) {
+            service.save(user);
+        }
+        assertEquals(Arrays.asList(users), service.selectAll());
     }
 
 }

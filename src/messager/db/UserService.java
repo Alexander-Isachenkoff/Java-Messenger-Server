@@ -12,7 +12,7 @@ public class UserService extends DAO<User> {
     }
 
     public List<User> getUsersWithoutDialog(long userId) {
-        List<Long> usersIds = new DialogService().getDialogsFor(userId)
+        List<Long> usersIds = new CommandDialogService().getDialogsFor(userId)
                 .stream()
                 .flatMap(dialog -> dialog.getUsers().stream())
                 .map(User::getId)

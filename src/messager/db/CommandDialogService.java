@@ -1,21 +1,21 @@
 package messager.db;
 
-import messager.entities.Dialog;
+import messager.entities.CommandDialog;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DialogService extends DAO<Dialog> {
+public class CommandDialogService extends DAO<CommandDialog> {
 
-    public DialogService() {
-        super(Dialog.class);
+    public CommandDialogService() {
+        super(CommandDialog.class);
     }
 
-    public void add(Dialog dialog) {
+    public void add(CommandDialog dialog) {
         save(dialog);
     }
 
-    public List<Dialog> getDialogsFor(long userId) {
+    public List<CommandDialog> getDialogsFor(long userId) {
         return selectAll()
                 .stream()
                 .filter(dialog -> dialog.hasUser(userId))

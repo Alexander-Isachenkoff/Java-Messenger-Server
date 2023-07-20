@@ -1,6 +1,7 @@
 package messager.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.LazyCollection;
@@ -16,6 +17,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(exclude = {"readBy"})
 @XmlRootElement
 public class TextMessage {
 
@@ -24,6 +26,9 @@ public class TextMessage {
     @Column(nullable = false)
     @XmlAttribute
     private long id;
+
+    @ManyToOne
+    private Dialog dialog;
 
     @XmlElement
     @ManyToOne
@@ -35,18 +40,15 @@ public class TextMessage {
     @XmlAttribute
     private String dateTime;
 
-    @ManyToOne
-    private Dialog dialog;
-
     @ManyToMany
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<User> readBy;
 
-    public TextMessage(User userFrom, String message, String dateTime, Dialog dialog) {
+    public TextMessage(Dialog dialog, User userFrom, String message, String dateTime) {
+        this.dialog = dialog;
         this.userFrom = userFrom;
         this.message = message;
         this.dateTime = dateTime;
-        this.dialog = dialog;
     }
 
 }

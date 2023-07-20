@@ -9,6 +9,8 @@ import java.io.IOException;
 
 public class ImageTest {
 
+    private static final String out = "out/test/";
+
     @Test
     void test() throws IOException {
         BufferedImage img = ImageIO.read(new File("test_resources/test.png"));
@@ -21,7 +23,7 @@ public class ImageTest {
     void testCropAtCenter() throws IOException {
         BufferedImage img = ImageIO.read(new File("test_resources/test.png"));
         BufferedImage cropImage = ImageUtils.cropImageAtCenter(img);
-        ImageIO.write(cropImage, "png", new File("test_resources/test cropped.png"));
+        ImageIO.write(cropImage, "png", new File(out + "test cropped.png"));
     }
 
     @Test
@@ -30,7 +32,7 @@ public class ImageTest {
         int width = 48;
         int height = 48;
         BufferedImage bufferedImage = ImageUtils.scaleImage(img, width, height);
-        ImageIO.write(bufferedImage, "png", new File("test_resources/test scaled.png"));
+        ImageIO.write(bufferedImage, "png", new File(out + "test scaled.png"));
     }
 
 }

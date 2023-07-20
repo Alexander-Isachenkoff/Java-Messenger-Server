@@ -1,29 +1,36 @@
 package messager.db;
 
-import messager.entities.Dialog;
+import messager.entities.CommandDialog;
 import messager.entities.User;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DialogServiceTest {
+class CommandDialogServiceTest {
 
     private final UserService userService = new UserService();
-    private final DialogService dialogService = new DialogService();
+    private final CommandDialogService commandDialogService = new CommandDialogService();
 
-    private final User[] users = new User[]{
+    private final User[] users = {
             new User("user1", "111"),
             new User("user2", "222"),
             new User("user3", "333")
     };
 
+    @BeforeAll
+    static void setUp() {
+        new File("messenger.sqlite").delete();
+    }
+
     @BeforeEach
-    void setUp() {
+    void reset() {
         userService.deleteAll();
-        dialogService.deleteAll();
+        commandDialogService.deleteAll();
 
         for (User user : users) {
             userService.save(user);
@@ -33,17 +40,17 @@ class DialogServiceTest {
     @Test
     void add() {
         // setup
-        Dialog dialog = new Dialog();
+        CommandDialog dialog = new CommandDialog();
         dialog.getUsers().add(users[0]);
         dialog.getUsers().add(users[1]);
 
         // act
-        dialogService.save(dialog);
-        List<Dialog> dialogs = dialogService.selectAll();
+        commandDialogService.save(dialog);
+        List<CommandDialog> dialogs = commandDialogService.selectAll();
 
         // verify
         assertEquals(1, dialogs.size());
-        Dialog dialog1 = dialogs.get(0);
+        CommandDialog dialog1 = dialogs.get(0);
         List<User> users1 = dialog1.getUsers();
         assertEquals(2, users1.size());
         assertEquals(users[0], users1.get(0));

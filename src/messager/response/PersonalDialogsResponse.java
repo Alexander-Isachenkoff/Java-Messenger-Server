@@ -4,7 +4,7 @@ package messager.response;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import messager.entities.Dialog;
+import messager.entities.PersonalDialog;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -15,8 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement
-public class DialogsListResponse {
+public class PersonalDialogsResponse {
     @XmlElementWrapper
     @XmlElement
-    public List<Dialog> dialogs;
+    public List<PersonalDialog> dialogs;
 }

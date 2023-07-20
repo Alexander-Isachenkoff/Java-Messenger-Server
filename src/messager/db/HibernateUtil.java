@@ -1,6 +1,7 @@
 package messager.db;
 
-import messager.entities.Dialog;
+import messager.entities.CommandDialog;
+import messager.entities.PersonalDialog;
 import messager.entities.TextMessage;
 import messager.entities.User;
 import org.hibernate.Session;
@@ -14,7 +15,8 @@ public class HibernateUtil {
     static {
         sessionFactory = new Configuration().configure()
                 .addAnnotatedClass(User.class)
-                .addAnnotatedClass(Dialog.class)
+                .addAnnotatedClass(PersonalDialog.class)
+                .addAnnotatedClass(CommandDialog.class)
                 .addAnnotatedClass(TextMessage.class)
                 .buildSessionFactory();
     }
