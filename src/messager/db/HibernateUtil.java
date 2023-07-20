@@ -10,18 +10,22 @@ import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
 
-    private static final SessionFactory sessionFactory;
+    private static SessionFactory sessionFactory;
 
-    static {
-        sessionFactory = new Configuration().configure()
-                .addAnnotatedClass(User.class)
-                .addAnnotatedClass(PersonalDialog.class)
-                .addAnnotatedClass(CommandDialog.class)
-                .addAnnotatedClass(TextMessage.class)
-                .buildSessionFactory();
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
+            sessionFactory = new Configuration().configure()
+                    .addAnnotatedClass(User.class)
+                    .addAnnotatedClass(PersonalDialog.class)
+                    .addAnnotatedClass(CommandDialog.class)
+                    .addAnnotatedClass(TextMessage.class)
+                    .buildSessionFactory();
+        }
+        return sessionFactory;
     }
 
     public static Session getSession() {
-        return sessionFactory.openSession();
+        return getSessionFactory().openSession();
     }
+
 }

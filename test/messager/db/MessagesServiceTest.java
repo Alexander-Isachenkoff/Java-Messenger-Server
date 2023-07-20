@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -29,12 +31,14 @@ class MessagesServiceTest {
     };
 
     @BeforeAll
-    static void setUp() {
-        new File("messenger.sqlite").delete();
+    static void setUp() throws IOException {
+        HibernateUtil.getSessionFactory().close();
+        Files.deleteIfExists(new File("messenger.sqlite").toPath());
     }
 
     @BeforeEach
     void reset() {
+        messagesService.deleteAll();
         commandDialogService.deleteAll();
         personalDialogService.deleteAll();
         userService.deleteAll();

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -23,8 +25,9 @@ class UserServiceTest {
     };
 
     @BeforeAll
-    static void setUp() {
-        new File("messenger.sqlite").delete();
+    static void setUp() throws IOException {
+        HibernateUtil.getSessionFactory().close();
+        Files.deleteIfExists(new File("messenger.sqlite").toPath());
     }
 
     @BeforeEach
@@ -36,7 +39,7 @@ class UserServiceTest {
     void register() {
         User user = new User("user1", "123456");
         service.save(user);
-        Long id = user.getId();
+        long id = user.getId();
 
         Optional<User> optionalUser = service.findById(id);
         assertTrue(optionalUser.isPresent());

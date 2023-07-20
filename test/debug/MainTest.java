@@ -7,10 +7,12 @@ import messager.entities.PersonalDialog;
 import messager.entities.TextMessage;
 import messager.entities.User;
 import messager.server.MessengerServer;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 
 class MainTest {
@@ -26,9 +28,9 @@ class MainTest {
             new User("they", "444")
     };
 
-    @BeforeEach
-    void setUp() {
-        new File("messenger.sqlite").delete();
+    @BeforeAll
+    static void setUp() throws IOException {
+        Files.deleteIfExists(new File("messenger.sqlite").toPath());
     }
 
     @Test

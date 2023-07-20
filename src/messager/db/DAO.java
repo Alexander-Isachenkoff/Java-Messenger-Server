@@ -22,7 +22,7 @@ class DAO<T> {
         return HibernateUtil.getSession();
     }
 
-    public Optional<T> findById(Long id) {
+    public Optional<T> findById(long id) {
         Session session = openSession();
         T obj = session.get(tClass, id);
         session.close();

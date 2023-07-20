@@ -1,10 +1,8 @@
 package messager.server;
 
 import messager.client.ClientXML;
-import messager.db.CommandDialogService;
-import messager.db.MessagesService;
-import messager.db.PersonalDialogService;
-import messager.db.UserService;
+import messager.db.*;
+import messager.entities.Dialog;
 import messager.entities.PersonalDialog;
 import messager.entities.TextMessage;
 import messager.entities.User;
@@ -20,6 +18,7 @@ import java.util.stream.Collectors;
 public class MessengerServer {
 
     private final UserService userService = new UserService();
+    private final DialogService dialogService = new DialogService();
     private final CommandDialogService commandDialogService = new CommandDialogService();
     private final PersonalDialogService personalDialogService = new PersonalDialogService();
     private final MessagesService messagesService = new MessagesService();
@@ -27,13 +26,13 @@ public class MessengerServer {
 
     public MessengerServer() {
         ServerBuilder builder = new ServerBuilder();
-        // builder.addClass(AddMessageRequest.class, this::onMessageRecieved);
+        builder.addClass(AddMessageRequest.class, this::onMessageRecieved);
         builder.addClass(SignInRequest.class, this::onSignIn);
         builder.addClass(SignUpRequest.class, this::onSignUp);
         builder.addClass(PersonalDialogsRequest.class, this::onPersonalDialogs);
         builder.addClass(MessagesRequest.class, this::onMessagesRequest);
         builder.addClass(UsersListRequest.class, this::onUsersRequest);
-        //builder.addClass(AddDialogRequest.class, this::onAddDialogRequest);
+        builder.addClass(AddDialogRequest.class, this::onAddPersonalDialog);
         builder.addClass(DeleteDialogRequest.class, this::onDeleteDialogRequest);
         builder.addClass(MessagesReadRequest.class, this::onMessagesReadRequest);
         server = builder.build();
@@ -69,18 +68,18 @@ public class MessengerServer {
         return new PersonalDialogsResponse(dialogs);
     }
 
-//    private Object onMessageRecieved(AddMessageRequest request) {
-//        User userFrom = userService.findById(request.getUserId()).get();
-//        Dialog dialog = commandDialogService.findById(request.getDialogId()).get();
-//        TextMessage textMessage = new TextMessage(
-//                userFrom,
-//                request.getText(),
-//                request.getDateTime(),
-//                dialog
-//        );
-//        messagesService.add(textMessage);
-//        return null;
-//    }
+    private Object onMessageRecieved(AddMessageRequest request) {
+        User userFrom = userService.findById(request.getUserId()).get();
+        Dialog dialog = dialogService.findById(request.getDialogId()).get();
+        TextMessage textMessage = new TextMessage(
+                dialog,
+                userFrom,
+                request.getText(),
+                request.getDateTime()
+        );
+        messagesService.add(textMessage);
+        return null;
+    }
 
     private SignUpResponse onSignUp(SignUpRequest request) {
         Optional<User> optionalUser = userService.selectAll().stream()
@@ -130,14 +129,14 @@ public class MessengerServer {
         return new UsersListResponse(availableUsers);
     }
 
-//    private AddDialogResponse onAddDialogRequest(AddDialogRequest request) {
-//        Dialog dialog = new Dialog(null, Arrays.asList(request.getUserFrom(), request.getUserTo()));
-//        commandDialogService.add(dialog);
-//        return new AddDialogResponse(dialog);
-//    }
+    private AddDialogResponse onAddPersonalDialog(AddDialogRequest request) {
+        PersonalDialog dialog = new PersonalDialog(request.getUserFrom(), request.getUserTo());
+        personalDialogService.save(dialog);
+        return new AddDialogResponse(dialog);
+    }
 
     private Void onDeleteDialogRequest(DeleteDialogRequest request) {
-        commandDialogService.findById(request.getDialogId()).ifPresent(commandDialogService::delete);
+        dialogService.findById(request.getDialogId()).ifPresent(dialogService::delete);
         return null;
     }
 

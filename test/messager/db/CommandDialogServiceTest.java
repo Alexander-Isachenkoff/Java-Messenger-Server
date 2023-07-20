@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -23,8 +25,9 @@ class CommandDialogServiceTest {
     };
 
     @BeforeAll
-    static void setUp() {
-        new File("messenger.sqlite").delete();
+    static void setUp() throws IOException {
+        HibernateUtil.getSessionFactory().close();
+        Files.deleteIfExists(new File("messenger.sqlite").toPath());
     }
 
     @BeforeEach
