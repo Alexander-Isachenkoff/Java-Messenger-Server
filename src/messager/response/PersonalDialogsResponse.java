@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @XmlRootElement
 public class PersonalDialogsResponse {
-    @XmlElementWrapper
-    @XmlElement
+    @XmlElementWrapper(name = "PersonalDialogs")
+    @XmlElement(name = "PersonalDialog")
     public List<PersonalDialog> dialogs;
 }

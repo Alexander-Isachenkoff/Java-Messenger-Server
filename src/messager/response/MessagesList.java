@@ -1,8 +1,9 @@
-package messager.requests;
+package messager.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import messager.entities.TextMessage;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -13,11 +14,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @XmlRootElement
-public class MessagesReadRequest implements Request {
-    @XmlElement
-    private long userId;
-
+public class MessagesList {
     @XmlElementWrapper(name = "Messages")
-    @XmlElement(name = "MessageId")
-    private List<Long> readMessagesId;
+    @XmlElement(name = "Message")
+    List<TextMessage> messages;
 }

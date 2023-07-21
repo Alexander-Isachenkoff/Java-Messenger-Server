@@ -1,18 +1,22 @@
 package messager.response;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import messager.entities.Dialog;
+import messager.entities.User;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @XmlRootElement
-public class AddDialogResponse {
-    @XmlElement
-    private Dialog dialog;
+public class UsersList {
+    @XmlElementWrapper(name = "Users")
+    @XmlElement(name = "User")
+    private List<User> users;
 }

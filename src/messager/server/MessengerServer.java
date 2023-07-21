@@ -6,11 +6,15 @@ import messager.entities.Dialog;
 import messager.entities.PersonalDialog;
 import messager.entities.TextMessage;
 import messager.entities.User;
-import messager.requests.*;
+import messager.requests.Request;
+import messager.requests.StringList;
+import messager.requests.TransferableObject;
 import messager.response.*;
 import messager.util.ImageUtils;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,15 +30,7 @@ public class MessengerServer {
 
     public MessengerServer() {
         ServerBuilder builder = new ServerBuilder();
-        builder.addClass(AddMessageRequest.class, this::onMessageRecieved);
-        builder.addClass(SignInRequest.class, this::onSignIn);
-        builder.addClass(SignUpRequest.class, this::onSignUp);
-        builder.addClass(PersonalDialogsRequest.class, this::onPersonalDialogs);
-        builder.addClass(MessagesRequest.class, this::onMessagesRequest);
-        builder.addClass(UsersListRequest.class, this::onUsersRequest);
-        builder.addClass(AddDialogRequest.class, this::onAddPersonalDialog);
-        builder.addClass(DeleteDialogRequest.class, this::onDeleteDialogRequest);
-        builder.addClass(MessagesReadRequest.class, this::onMessagesReadRequest);
+        builder.addClass(Request.class, this::onRequest);
         server = builder.build();
         server.setConsumer((response, address) -> {
             if (response != null) {
@@ -44,69 +40,24 @@ public class MessengerServer {
         });
     }
 
-    private Void onMessagesReadRequest(MessagesReadRequest request) {
-        for (Long messageId : request.getReadMessagesId()) {
-            TextMessage message = messagesService.findById(messageId).get();
-            message.getReadBy().add(userService.findById(request.getUserId()).get());
-            messagesService.update(message);
+    private Object onRequest(Request request) {
+        Method method;
+        try {
+            method = this.getClass().getMethod(request.getFunction(), TransferableObject.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
-        return null;
-    }
-
-    private MessagesResponse onMessagesRequest(MessagesRequest request) {
-        List<TextMessage> messages = messagesService.getMessages(request.getDialogId());
-        if (request.isUnreadOnly()) {
-            messages = messages.stream()
-                    .filter(message -> message.getReadBy().stream().map(User::getId).noneMatch(aLong -> aLong == request.getUserId()))
-                    .collect(Collectors.toList());
+        try {
+            return method.invoke(this, request.getTransferableObject());
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
-        return new MessagesResponse(messages);
     }
 
-    private PersonalDialogsResponse onPersonalDialogs(PersonalDialogsRequest request) {
-        List<PersonalDialog> dialogs = personalDialogService.getDialogsFor(request.getUserId());
-        return new PersonalDialogsResponse(dialogs);
-    }
-
-    private Object onMessageRecieved(AddMessageRequest request) {
-        User userFrom = userService.findById(request.getUserId()).get();
-        Dialog dialog = dialogService.findById(request.getDialogId()).get();
-        TextMessage textMessage = new TextMessage(
-                dialog,
-                userFrom,
-                request.getText(),
-                request.getDateTime()
-        );
-        messagesService.add(textMessage);
-        return null;
-    }
-
-    private SignUpResponse onSignUp(SignUpRequest request) {
-        Optional<User> optionalUser = userService.selectAll().stream()
-                .filter(u -> u.getName().equals(request.getUserName()))
-                .findFirst();
-        SignUpResponse response;
-        if (optionalUser.isPresent()) {
-            response = new SignUpResponse(null, SignUpResponse.SignUpStatus.USER_ALREADY_EXISTS);
-        } else {
-            String encodedImage = null;
-            if (request.getEncodedImage() != null) {
-                BufferedImage image = ImageUtils.decodeImage(request.getEncodedImage());
-                image = ImageUtils.cropImageAtCenter(image);
-                image = ImageUtils.scaleImage(image, 48, 48);
-                encodedImage = ImageUtils.encodeImage(image, request.getImageFormat());
-            }
-            User user = new User(request.getUserName(), request.getPassword(), encodedImage);
-            response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
-            userService.save(user);
-        }
-
-        return response;
-    }
-
-    private SignInResponse onSignIn(SignInRequest signInRequest) {
-        String userName = signInRequest.getUserName();
-        String password = signInRequest.getPassword();
+    @SuppressWarnings("unused")
+    public SignInResponse signIn(TransferableObject params) {
+        String userName = params.getString("userName");
+        String password = params.getString("password");
         Optional<User> optionalUser = userService.selectAll().stream()
                 .filter(user -> user.getName().equals(userName))
                 .findFirst();
@@ -124,19 +75,90 @@ public class MessengerServer {
         return response;
     }
 
-    private UsersListResponse onUsersRequest(UsersListRequest request) {
-        List<User> availableUsers = userService.getUsersWithoutDialog(request.getUserId());
-        return new UsersListResponse(availableUsers);
+    @SuppressWarnings("unused")
+    public Void readMessages(TransferableObject params) {
+        StringList messagesId = params.getStringList("messagesId");
+        for (int i = 0; i < messagesId.size(); i++) {
+            TextMessage message = messagesService.findById(messagesId.getInt(i)).get();
+            message.getReadBy().add(userService.findById(params.getInt("userId")).get());
+            messagesService.update(message);
+        }
+        return null;
     }
 
-    private AddDialogResponse onAddPersonalDialog(AddDialogRequest request) {
-        PersonalDialog dialog = new PersonalDialog(request.getUserFrom(), request.getUserTo());
+    @SuppressWarnings("unused")
+    public MessagesList getMessages(TransferableObject params) {
+        List<TextMessage> messages = messagesService.getMessages(params.getInt("dialogId"));
+        if (params.getBoolean("unreadOnly")) {
+            messages = messages.stream()
+                    .filter(message -> message.getReadBy().stream().map(User::getId).noneMatch(aLong -> aLong == params.getInt("userId")))
+                    .collect(Collectors.toList());
+        }
+        return new MessagesList(messages);
+    }
+
+    @SuppressWarnings("unused")
+    public PersonalDialogsResponse getPersonalDialogs(TransferableObject params) {
+        List<PersonalDialog> dialogs = personalDialogService.getDialogsFor(params.getInt("userId"));
+        return new PersonalDialogsResponse(dialogs);
+    }
+
+    @SuppressWarnings("unused")
+    public Object addMessage(TransferableObject params) {
+        User userFrom = userService.findById(params.getInt("userId")).get();
+        Dialog dialog = dialogService.findById(params.getInt("dialogId")).get();
+        TextMessage textMessage = new TextMessage(
+                dialog,
+                userFrom,
+                params.getString("text"),
+                params.getString("dateTime")
+        );
+        messagesService.add(textMessage);
+        return null;
+    }
+
+    @SuppressWarnings("unused")
+    public SignUpResponse signUp(TransferableObject params) {
+        Optional<User> optionalUser = userService.selectAll().stream()
+                .filter(u -> u.getName().equals(params.getString("userName")))
+                .findFirst();
+        SignUpResponse response;
+        if (optionalUser.isPresent()) {
+            response = new SignUpResponse(null, SignUpResponse.SignUpStatus.USER_ALREADY_EXISTS);
+        } else {
+            String encodedImage = null;
+            if (params.getString("encodedImage") != null) {
+                BufferedImage image = ImageUtils.decodeImage(params.getString("encodedImage"));
+                image = ImageUtils.cropImageAtCenter(image);
+                image = ImageUtils.scaleImage(image, 48, 48);
+                encodedImage = ImageUtils.encodeImage(image, params.getString("imageFormat"));
+            }
+            User user = new User(params.getString("userName"), params.getString("password"), encodedImage);
+            response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
+            userService.save(user);
+        }
+
+        return response;
+    }
+
+    @SuppressWarnings("unused")
+    public UsersList usersList(TransferableObject params) {
+        List<User> availableUsers = userService.getUsersWithoutDialog(params.getInt("userId"));
+        return new UsersList(availableUsers);
+    }
+
+    @SuppressWarnings("unused")
+    public PersonalDialog addDialog(TransferableObject params) {
+        User userFrom = userService.findById(params.getInt("userFromId")).get();
+        User userTo = userService.findById(params.getInt("userToId")).get();
+        PersonalDialog dialog = new PersonalDialog(userFrom, userTo);
         personalDialogService.save(dialog);
-        return new AddDialogResponse(dialog);
+        return dialog;
     }
 
-    private Void onDeleteDialogRequest(DeleteDialogRequest request) {
-        dialogService.findById(request.getDialogId()).ifPresent(dialogService::delete);
+    @SuppressWarnings("unused")
+    public Void deleteDialog(TransferableObject params) {
+        dialogService.findById(params.getInt("dialogId")).ifPresent(dialogService::delete);
         return null;
     }
 
