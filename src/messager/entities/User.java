@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -19,11 +18,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(nullable = false)
-    @XmlAttribute
+    @XmlElement
     private long id;
 
     @Column(unique = true, nullable = false)
-    @XmlAttribute
+    @XmlElement
     private String name;
 
     @Column(nullable = false)
