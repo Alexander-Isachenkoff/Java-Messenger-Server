@@ -1,5 +1,6 @@
 package messager.server;
 
+import lombok.SneakyThrows;
 import messager.client.ClientXML;
 import messager.db.*;
 import messager.entities.Dialog;
@@ -13,7 +14,6 @@ import messager.response.*;
 import messager.util.ImageUtils;
 
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
@@ -40,18 +40,10 @@ public class MessengerServer {
         });
     }
 
+    @SneakyThrows
     private Object onRequest(Request request) {
-        Method method;
-        try {
-            method = this.getClass().getMethod(request.getFunction(), TransferableObject.class);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            return method.invoke(this, request.getTransferableObject());
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        Method method = this.getClass().getMethod(request.getFunction(), TransferableObject.class);
+        return method.invoke(this, request.getTransferableObject());
     }
 
     @SuppressWarnings("unused")
