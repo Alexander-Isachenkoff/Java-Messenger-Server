@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Map;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
 
 public class Server {
 
@@ -20,14 +18,11 @@ public class Server {
     private final Unmarshaller unmarshaller;
     private ServerSocket serverSocket;
 
-    private final Map<Class<? extends Request>, Function> map;
-    private BiConsumer<Object, String> consumer = (o, s) -> {
-    };
+    private BiConsumer<Request, String> onAccepted = (o, s) -> {};
 
-    public Server(Map<Class<? extends Request>, Function> classMap) {
-        this.map = classMap;
+    public Server() {
         try {
-            JAXBContext context = JAXBContext.newInstance(classMap.keySet().toArray(new Class[0]));
+            JAXBContext context = JAXBContext.newInstance(Request.class);
             unmarshaller = context.createUnmarshaller();
         } catch (JAXBException e) {
             throw new RuntimeException(e);
@@ -49,16 +44,12 @@ public class Server {
             try (ObjectInputStream ois = new ObjectInputStream(incoming.getInputStream())) {
                 object = unmarshaller.unmarshal(ois);
             }
-            Function classConsumer = map.get(object.getClass());
-            if (classConsumer != null) {
-                Object result = classConsumer.apply(object);
-                consumer.accept(result, incoming.getInetAddress().getHostAddress());
-            }
+            onAccepted.accept((Request) object, incoming.getInetAddress().getHostAddress());
         }
     }
 
-    public void setConsumer(BiConsumer<Object, String> consumer) {
-        this.consumer = consumer;
+    public void setOnAccepted(BiConsumer<Request, String> onAccepted) {
+        this.onAccepted = onAccepted;
     }
 
 }

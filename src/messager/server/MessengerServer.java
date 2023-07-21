@@ -26,22 +26,20 @@ public class MessengerServer {
     private final CommandDialogService commandDialogService = new CommandDialogService();
     private final PersonalDialogService personalDialogService = new PersonalDialogService();
     private final MessagesService messagesService = new MessagesService();
-    private final Server server;
+    private final Server server = new Server();
 
     public MessengerServer() {
-        ServerBuilder builder = new ServerBuilder();
-        builder.addClass(Request.class, this::onRequest);
-        server = builder.build();
-        server.setConsumer((response, address) -> {
-            if (response != null) {
+        server.setOnAccepted((request, address) -> {
+            Object result = processRequest(request);
+            if (result != null) {
                 ClientXML client = new ClientXML();
-                client.post(response, address);
+                client.post(result, address);
             }
         });
     }
 
     @SneakyThrows
-    private Object onRequest(Request request) {
+    private Object processRequest(Request request) {
         Method method = this.getClass().getMethod(request.getFunction(), TransferableObject.class);
         return method.invoke(this, request.getTransferableObject());
     }
