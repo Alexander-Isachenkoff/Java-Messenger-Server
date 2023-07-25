@@ -45,6 +45,11 @@ public class MessengerServer {
     }
 
     @SuppressWarnings("unused")
+    public CheckAccessResponse checkServerAccess(TransferableObject params) {
+        return new CheckAccessResponse();
+    }
+
+    @SuppressWarnings("unused")
     public SignInResponse signIn(TransferableObject params) {
         String userName = params.getString("userName");
         String password = params.getString("password");
