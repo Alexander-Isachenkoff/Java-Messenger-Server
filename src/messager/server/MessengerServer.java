@@ -15,6 +15,8 @@ import messager.util.ImageUtils;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -160,6 +162,14 @@ public class MessengerServer {
     public Void deleteDialog(TransferableObject params) {
         dialogService.findById(params.getInt("dialogId")).ifPresent(dialogService::delete);
         return null;
+    }
+
+    @SuppressWarnings("unused")
+    public TextMessage getLastMessage(TransferableObject params) {
+        Optional<TextMessage> messageOptional = messagesService.getMessages(params.getInt("dialogId"))
+                .stream()
+                .max(Comparator.comparing(m -> LocalDateTime.parse(m.getDateTime())));
+        return messageOptional.orElse(new TextMessage());
     }
 
     public void start() {

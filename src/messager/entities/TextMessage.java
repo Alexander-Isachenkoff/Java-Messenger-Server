@@ -35,7 +35,7 @@ public class TextMessage {
     private User userFrom;
 
     @XmlAttribute
-    private String message;
+    private String text;
 
     @XmlAttribute
     private String dateTime;
@@ -44,10 +44,10 @@ public class TextMessage {
     @LazyCollection(LazyCollectionOption.FALSE)
     private List<User> readBy;
 
-    public TextMessage(Dialog dialog, User userFrom, String message, String dateTime) {
+    public TextMessage(Dialog dialog, User userFrom, String text, String dateTime) {
         this.dialog = dialog;
         this.userFrom = userFrom;
-        this.message = message;
+        this.text = text;
         this.dateTime = dateTime;
     }
 
