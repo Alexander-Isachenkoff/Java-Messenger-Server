@@ -10,27 +10,27 @@ class TransferableObjectTest {
 
     @Test
     void test() {
-        TransferableObject testObject = new TransferableObject();
-        testObject.put("par1", 1);
-        testObject.put("par2", "2");
-        testObject.put("par3", 3.5);
-        testObject.put("par4", 10L);
-        testObject.put("par5", true);
+        TransferableObject testObject = new TransferableObject()
+                .put("par1", 1)
+                .put("par2", "2")
+                .put("par3", 3.5)
+                .put("par4", 10L)
+                .put("par5", true);
 
         StringList list = new StringList();
         list.put(1);
         list.put("num");
         testObject.put("par25", list);
 
-        TransferableObject innerObject = new TransferableObject();
-        innerObject.put("in1", 21);
-        innerObject.put("in2", "hello");
+        TransferableObject innerObject = new TransferableObject()
+                .put("in1", 21)
+                .put("in2", "hello");
 
         testObject.put("innerParams", innerObject);
 
         ObjectList objectList = new ObjectList();
-        TransferableObject transferableObject1 = new TransferableObject();
-        transferableObject1.put("superInnerDouble", 48.5);
+        TransferableObject transferableObject1 = new TransferableObject()
+                .put("superInnerDouble", 48.5);
         objectList.put(transferableObject1);
         testObject.put("objectsList", objectList);
 
