@@ -58,4 +58,7 @@ public class StringList {
         return list.size();
     }
 
+    public List<String> getList() {
+        return list;
+    }
 }

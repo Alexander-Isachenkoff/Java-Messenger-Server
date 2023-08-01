@@ -80,11 +80,7 @@ public class MessengerServer {
     @SuppressWarnings("unused")
     public Void readMessages(TransferableObject params) {
         StringList messagesId = params.getStringList("messagesId");
-        for (int i = 0; i < messagesId.size(); i++) {
-            TextMessage message = messagesService.findById(messagesId.getInt(i)).get();
-            message.getReadBy().add(userService.findById(params.getInt("userId")).get());
-            messagesService.update(message);
-        }
+        messagesService.readMessages(messagesId, params.getInt("userId"));
         return null;
     }
 
@@ -96,6 +92,19 @@ public class MessengerServer {
                     .filter(message -> message.getReadBy().stream().map(User::getId).noneMatch(aLong -> aLong == params.getInt("userId")))
                     .collect(Collectors.toList());
         }
+        return new MessagesList(messages);
+    }
+
+    @SuppressWarnings("unused")
+    public MessagesList getOldMessages(TransferableObject params) {
+        int dialogId = params.getInt("dialogId");
+        List<TextMessage> messages = messagesService.getMessages(dialogId);
+
+        int userId = params.getInt("userId");
+        messages = messages.stream()
+                .filter(message -> message.getReadBy().stream().map(User::getId).anyMatch(id -> id == userId))
+                .collect(Collectors.toList());
+
         return new MessagesList(messages);
     }
 
@@ -170,6 +179,28 @@ public class MessengerServer {
                 .stream()
                 .max(Comparator.comparing(m -> LocalDateTime.parse(m.getDateTime())));
         return messageOptional.orElse(new TextMessage());
+    }
+
+    @SuppressWarnings("unused")
+    public XmlBoolean isReadMessage(TransferableObject params) {
+        TextMessage message = messagesService.findById(params.getInt("messageId")).get();
+        boolean b = message.getReadBy().stream()
+                .anyMatch(user -> user.getId() != message.getUserFrom().getId());
+        return new XmlBoolean(b);
+    }
+
+    @SuppressWarnings("unused")
+    public MessagesList getReadMessages(TransferableObject params) {
+        List<TextMessage> messages = messagesService.getReadMessages(params.getInt("dialogId"), params.getInt("userId"));
+        return new MessagesList(messages);
+    }
+
+    @SuppressWarnings("unused")
+    public Object updateAccepted(TransferableObject params) {
+        StringList messagesId = params.getStringList("messagesId");
+        int userId = params.getInt("userId");
+        messagesService.deleteStatesWhere(messagesId.getList().stream().map(Long::parseLong).collect(Collectors.toList()), userId);
+        return null;
     }
 
     public void start() {
