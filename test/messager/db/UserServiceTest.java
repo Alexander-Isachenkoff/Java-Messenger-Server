@@ -19,9 +19,9 @@ class UserServiceTest {
     private final UserService service = new UserService();
 
     private final User[] users = {
-            new User("user1", "111"),
-            new User("user2", "222"),
-            new User("user3", "333")
+            new User("user1", "test user - user1", "111"),
+            new User("user2", "test user - user2", "222"),
+            new User("user3", "test user - user3", "333")
     };
 
     @BeforeAll
@@ -37,7 +37,7 @@ class UserServiceTest {
 
     @Test
     void register() {
-        User user = new User("user1", "123456");
+        User user = new User("user1", "test user - user1", "123456");
         service.save(user);
         long id = user.getId();
 

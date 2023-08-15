@@ -58,10 +58,10 @@ public class MessengerServer {
 
     @SuppressWarnings("unused")
     public SignInResponse signIn(TransferableObject params) {
-        String userName = params.getString("userName");
+        String login = params.getString("login");
         String password = params.getString("password");
         Optional<User> optionalUser = userService.selectAll().stream()
-                .filter(user -> user.getName().equals(userName))
+                .filter(user -> user.getLogin().equals(login))
                 .findFirst();
         SignInResponse response;
         if (optionalUser.isPresent()) {
@@ -131,7 +131,7 @@ public class MessengerServer {
     @SuppressWarnings("unused")
     public SignUpResponse signUp(TransferableObject params) {
         Optional<User> optionalUser = userService.selectAll().stream()
-                .filter(u -> u.getName().equals(params.getString("userName")))
+                .filter(u -> u.getLogin().equals(params.getString("login")))
                 .findFirst();
         SignUpResponse response;
         if (optionalUser.isPresent()) {
@@ -144,7 +144,7 @@ public class MessengerServer {
                 image = ImageUtils.scaleImage(image, 48, 48);
                 encodedImage = ImageUtils.encodeImage(image, params.getString("imageFormat"));
             }
-            User user = new User(params.getString("userName"), params.getString("password"), encodedImage);
+            User user = new User(params.getString("login"), params.getString("userName"), params.getString("password"), encodedImage);
             response = new SignUpResponse(user, SignUpResponse.SignUpStatus.OK);
             userService.save(user);
         }

@@ -22,10 +22,10 @@ class MainTest {
     private final MessagesService messagesService = new MessagesService();
 
     private final User[] users = {
-            new User("me", "111"),
-            new User("he", "222"),
-            new User("she", "333"),
-            new User("they", "444")
+            new User("me", "test user - me", "111"),
+            new User("he", "test user - he", "222"),
+            new User("she", "test user - she", "333"),
+            new User("they", "test user - they", "444")
     };
 
     @BeforeAll

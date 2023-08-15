@@ -19,9 +19,9 @@ class CommandDialogServiceTest {
     private final CommandDialogService commandDialogService = new CommandDialogService();
 
     private final User[] users = {
-            new User("user1", "111"),
-            new User("user2", "222"),
-            new User("user3", "333")
+            new User("user1", "test user - user1", "111"),
+            new User("user2", "test user - user2", "222"),
+            new User("user3", "test user - user3", "333")
     };
 
     @BeforeAll

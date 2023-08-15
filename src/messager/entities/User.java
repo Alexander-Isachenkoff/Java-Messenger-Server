@@ -23,6 +23,10 @@ public class User {
 
     @Column(unique = true, nullable = false)
     @XmlElement
+    private String login;
+
+    @Column(unique = true, nullable = false)
+    @XmlElement
     private String name;
 
     @Column(nullable = false)
@@ -31,11 +35,12 @@ public class User {
     @XmlElement
     public String encodedImage;
 
-    public User(String name, String password) {
-        this(name, password, null);
+    public User(String login, String name, String password) {
+        this(login, name, password, null);
     }
 
-    public User(String name, String password, String encodedImage) {
+    public User(String login, String name, String password, String encodedImage) {
+        this.login = login;
         this.name = name;
         this.passwordHash = password.hashCode();
         this.encodedImage = encodedImage;
