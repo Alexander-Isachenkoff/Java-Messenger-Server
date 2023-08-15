@@ -65,7 +65,7 @@ public class MessengerServer {
                 .findFirst();
         SignInResponse response;
         if (optionalUser.isPresent()) {
-            if (optionalUser.get().getPassword().equals(password)) {
+            if (optionalUser.get().getPasswordHash() == password.hashCode()) {
                 response = new SignInResponse(optionalUser.get(), SignInResponse.SignInStatus.OK);
             } else {
                 response = new SignInResponse(null, SignInResponse.SignInStatus.WRONG_PASSWORD);

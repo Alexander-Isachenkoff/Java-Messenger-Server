@@ -26,19 +26,18 @@ public class User {
     private String name;
 
     @Column(nullable = false)
-    private String password;
+    private int passwordHash;
 
     @XmlElement
     public String encodedImage;
 
     public User(String name, String password) {
-        this.name = name;
-        this.password = password;
+        this(name, password, null);
     }
 
     public User(String name, String password, String encodedImage) {
         this.name = name;
-        this.password = password;
+        this.passwordHash = password.hashCode();
         this.encodedImage = encodedImage;
     }
 
